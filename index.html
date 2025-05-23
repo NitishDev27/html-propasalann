@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be Mine?</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('images1.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            transform-style: preserve-3d;
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hanging-text {
+            font-size: 8em;
+            color: #0e0d0d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform-style: preserve-3d;
+            animation: swing 2s ease-in-out infinite;
+            background: none;
+            -webkit-background-clip: initial;
+            background-clip: initial;
+            -webkit-text-fill-color: initial;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            margin: 0 auto;
+            width: 90%;
+            text-align: center;
+            letter-spacing: 0.25em;
+            font-family: 'Times New Roman', Times, serif;
+            /* Fallback for browsers that don't support gradient text */
+            @supports not (background-clip: text) {
+                color: #ff69b4;
+                background: none;
+                -webkit-text-fill-color: initial;
+            }
+        }
+
+        .rope {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            width: 6px;
+            height: 150px;
+            background: linear-gradient(to bottom, #8B4513, #A0522D);
+            transform-origin: top;
+            animation: ropeSwing 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .proposal-text {
+            margin-top: 80px;
+            font-size: 2.5em;
+            color: #e2fa04;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+            animation-delay: 1s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            transform: rotate(45deg);
+            animation: floatHeart 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+        }
+
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+
+        .heart:before {
+            left: -10px;
+        }
+
+        .heart:after {
+            top: -10px;
+        }
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-yes {
+            background: linear-gradient(45deg, #43e97b, #38f9d7);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.2);
+        }
+
+        .btn-no {
+            background: linear-gradient(45deg, #ff5858, #f09819);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 88, 88, 0.2);
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #noBtn {
+            position: relative;
+        }
+
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+
+        .music-control.highlight {
+            box-shadow: 0 0 20px 5px #ff69b4, 0 0 10px 2px #fff;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1);}
+            to { transform: scale(1.15);}
+        }
+
+        .gallery {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .gallery-content {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .gallery img {
+            max-width: 70%;
+            height: auto;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
+            50% { transform: rotateX(10deg) rotateY(10deg); }
+        }
+
+        @keyframes ropeSwing {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(-20px) rotate(45deg); }
+        }
+
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .message-box h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .message-box p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: rgb(215, 22, 22);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="rope"></div>
+        <div class="hanging-text">I LOVE YOU</div>
+        <div class="proposal-text">Will You Be Mine?</div>
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="acceptProposal()">Yes</button>
+            <button class="btn btn-no" id="noBtn" onmouseover="moveButton()">No</button>
+        </div>
+    </div>
+
+    <div class="music-control" onclick="toggleMusic()">
+        🎵
+    </div>
+
+    <div class="gallery" id="gallery">
+        <div class="gallery-content">
+            <h2 style="color: white;">HELLO BESTIE</h2>
+            <!-- Add your photos here -->
+            <img src="img1 (1).jpg" alt="Us">
+            <img src="img1 (2).jpg" alt="Love">
+            <img src="img1 (3).jpg" alt="Romance">
+        </div>
+    </div>
+
+    <div class="message-box" id="messageBox">
+        <h2>My Dearest Love</h2>
+        <p>before I met you, I nver knew about what it was like to smile for no reson. Now that you're here, I think my entire life will fall into palce.</p>
+        <p>Will you make me the happiest person alive by saying yes?</p>
+        <button class="close-btn" onclick="closeMessage()">Close</button>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="Ellie Goulding - Love Me Like You Do (Official Video) [TubeRipper.com].mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        let musicPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+
+        function toggleMusic() {
+            if (musicPlaying) {
+                bgMusic.pause();
+                musicPlaying = false;
+            } else {
+                bgMusic.play();
+                musicPlaying = true;
+            }
+        }
+
+        function acceptProposal() {
+            // Show celebration
+            createConfetti();
+            
+            // Show message box
+            document.getElementById('messageBox').style.display = 'block';
+            
+            // Show gallery after a delay
+            setTimeout(() => {
+                document.getElementById('gallery').style.display = 'block';
+            }, 2000);
+        }
+
+        function closeMessage() {
+            document.getElementById('messageBox').style.display = 'none';
+        }
+
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+            btn.style.position = 'absolute';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = Math.random() * window.innerHeight + 'px';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(heart);
+            }
+        }
+
+        function createConfetti() {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            document.body.appendChild(celebration);
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                celebration.appendChild(confetti);
+            }
+        }
+
+        createHearts();
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.7; // Optional: set initial volume
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // Autoplay was prevented.
+                    // Optionally, you can visually highlight the music button or show a message.
+                    document.querySelector('.music-control').classList.add('highlight');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
